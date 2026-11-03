@@ -215,14 +215,41 @@ function humanoid(o) {
   if (o.hat === 'tricorn') {
     mesh(new THREE.CylinderGeometry(0.36, 0.38, 0.05, 3), stdMat(0x1d1410, 0.8), 0, 2.02, 0).rotation.y = Math.PI;
     mesh(new THREE.CylinderGeometry(0.17, 0.2, 0.18, 12), stdMat(0x1d1410, 0.8), 0, 2.1, 0);
+  } else if (o.hat === 'straw') {
+    const straw = stdMat(0xe8b85c, 0.95), band = stdMat(0xc0201c, 0.8), hair = stdMat(0x111111, 0.9);
+    // pelo despeinado negro
+    mesh(new THREE.SphereGeometry(0.215, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.6), hair, 0, 1.86, -0.01);
+    for (let i = 0; i < 7; i++) { const a = -1.2 + i * 0.4; const t = mesh(new THREE.ConeGeometry(0.05, 0.14, 5), hair, Math.sin(a) * 0.17, 1.92, Math.cos(a) * 0.15); t.rotation.set(Math.PI * 0.75, a, 0); }
+    // sombrero de paja con cinta roja
+    mesh(new THREE.CylinderGeometry(0.42, 0.44, 0.03, 24), straw, 0, 2.02, 0);
+    mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.16, 20), straw, 0, 2.11, 0);
+    mesh(new THREE.CylinderGeometry(0.222, 0.222, 0.05, 20), band, 0, 2.06, 0);
+    // cicatriz bajo el ojo izquierdo y sonrisa grande
+    mesh(new THREE.BoxGeometry(0.07, 0.012, 0.01), stdMat(0x5a1a10), -0.08, 1.8, 0.195).rotation.z = 0.2;
+    mesh(new THREE.BoxGeometry(0.16, 0.05, 0.02), stdMat(0xffffff, 0.4), 0, 1.74, 0.18);
   } else {
     mesh(new THREE.SphereGeometry(0.215, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), stdMat(o.hat, 0.9), 0, 1.86, 0);
   }
   const limb = (r, len, m, x, y) => { const p = new THREE.Group(); p.position.set(x, y, 0); mesh(new THREE.CapsuleGeometry(r, len, 4, 8), m, 0, -len / 2 - r, 0, p); body.add(p); return p; };
-  const armL = limb(0.075, 0.55, shirt, -0.38, 1.58), armR = limb(0.075, 0.55, shirt, 0.38, 1.58);
+  if (o.vest) { // chaleco abierto: pecho descubierto en V
+    const v = mesh(new THREE.BoxGeometry(0.14, 0.42, 0.02), skin, 0, 1.36, 0.215); v.scale.set(1, 1, 1);
+    mesh(new THREE.ConeGeometry(0.1, 0.22, 3), skin, 0, 1.12, 0.205).rotation.z = Math.PI;
+    for (const y of [1.18, 1.05]) { mesh(new THREE.SphereGeometry(0.02, 6, 4), stdMat(0xf2c230, 0.4), -0.09, y, 0.21); }
+  }
+  const sleeve = o.vest ? skin : shirt;
+  const armL = limb(0.075, 0.55, sleeve, -0.38, 1.58), armR = limb(0.075, 0.55, sleeve, 0.38, 1.58);
   mesh(new THREE.SphereGeometry(0.075, 8, 6), skin, 0, -0.75, 0, armL); mesh(new THREE.SphereGeometry(0.075, 8, 6), skin, 0, -0.75, 0, armR);
   const legL = limb(0.1, 0.7, pants, -0.14, 0.95), legR = limb(0.1, 0.7, pants, 0.14, 0.95);
-  mesh(new THREE.BoxGeometry(0.17, 0.12, 0.3), boots, 0, -0.95, 0.05, legL); mesh(new THREE.BoxGeometry(0.17, 0.12, 0.3), boots, 0, -0.95, 0.05, legR);
+  if (o.shorts) { // pantalón corto doblado: espinillas descubiertas y sandalias
+    for (const leg of [legL, legR]) {
+      leg.children[0].material = skin;
+      mesh(new THREE.CylinderGeometry(0.125, 0.13, 0.45, 10), pants, 0, -0.2, 0, leg);
+      mesh(new THREE.TorusGeometry(0.125, 0.03, 6, 12), pants, 0, -0.43, 0, leg).rotation.x = Math.PI / 2;
+      mesh(new THREE.BoxGeometry(0.15, 0.04, 0.28), stdMat(0x6b4a2a, 0.8), 0, -0.99, 0.05, leg);
+    }
+  } else {
+    mesh(new THREE.BoxGeometry(0.17, 0.12, 0.3), boots, 0, -0.95, 0.05, legL); mesh(new THREE.BoxGeometry(0.17, 0.12, 0.3), boots, 0, -0.95, 0.05, legR);
+  }
   // pistola de chispa en la mano derecha
   const gun = new THREE.Group(); gun.position.set(0, -0.78, 0.05); armR.add(gun);
   mesh(new THREE.CylinderGeometry(0.03, 0.035, 0.42, 8), M.metal, 0, -0.05, 0.2, gun).rotation.x = Math.PI / 2;
@@ -287,7 +314,7 @@ const P = {
   pos: new THREE.Vector3(), vel: new THREE.Vector3(), yaw: 0, pitch: 0, hp: 100, mag: 12, reserve: 48,
   reloading: 0, fireCd: 0, onGround: true, walk: 0, aiming: false, walls: MAX_WALLS, hurt: 0,
 };
-const player = humanoid({ skin: 0xc68e62, shirt: 0x24476b, pants: 0x3b3326, hat: 'tricorn', beard: null });
+const player = humanoid({ skin: 0xe9b98f, shirt: 0xc0201c, pants: 0x2f5fa8, hat: 'straw', vest: true, shorts: true, beard: null });
 let enemies = [], pickups = [], walls = [], state = 'menu', treasure, treasureBeam, msgT = 0;
 const keys = {};
 let mouseDown = false;
