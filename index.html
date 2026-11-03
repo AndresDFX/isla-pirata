@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isla Pirata</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+</head>
+<body>
+  <div id="crosshair"><div id="hitmark"></div></div>
+  <div id="hud">
+    <div id="obj">🏴‍☠️ Elimina a los piratas rivales</div>
+    <div class="bar"><span>❤</span><div class="track"><div id="hp"></div></div></div>
+    <div id="walls">🧱 Muros: <b id="wallN">10</b></div>
+  </div>
+  <div id="ammo"><b id="mag">12</b> / <span id="res">48</span><div id="reload" class="hidden">Recargando...</div></div>
+  <div id="msg"></div>
+  <div id="dmg"></div>
+
+  <div id="menu" class="screen">
+    <h1>ISLA PIRATA</h1>
+    <p>Elimina a los piratas rivales y encuentra el tesoro escondido.</p>
+    <table>
+      <tr><td>WASD</td><td>Moverse</td></tr>
+      <tr><td>Shift</td><td>Correr</td></tr>
+      <tr><td>Espacio</td><td>Saltar</td></tr>
+      <tr><td>Click izquierdo</td><td>Disparar</td></tr>
+      <tr><td>Click derecho</td><td>Apuntar</td></tr>
+      <tr><td>R</td><td>Recargar</td></tr>
+      <tr><td>Q</td><td>Construir muro de madera</td></tr>
+      <tr><td>E</td><td>Abrir el tesoro</td></tr>
+    </table>
+    <button id="play">Click para jugar</button>
+  </div>
+  <div id="end" class="screen hidden">
+    <h1 id="endTitle"></h1>
+    <p id="endText"></p>
+    <button id="again">Jugar de nuevo</button>
+  </div>
+  <div id="loading" class="screen">Cargando la isla...</div>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
